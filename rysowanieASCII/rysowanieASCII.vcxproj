@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rysowanie.cpp" />
     <ClCompile Include="rysowanieASCII.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,7 @@ int main()
     //potem jako parametr będą przyjmować je wszystkie funkcje
     HANDLE whnd = GetStdHandle(STD_OUTPUT_HANDLE);
     HANDLE rhnd = GetStdHandle(STD_INPUT_HANDLE);
+    changeCursorVisibility(whnd, 0);
     menu(whnd, rhnd);
    
 

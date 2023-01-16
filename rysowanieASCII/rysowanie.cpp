@@ -13,17 +13,23 @@ void wybierzPoczatek(char &znak, int &rozmiar) {
     system("CLS");
 }
 
-void zmienPozycjeKursora(HANDLE hStdout, int x, int y, int offsetX, int offsetY) {
+void zmienPozycjeKursora(HANDLE hStdout, int pozycjaX, int pozycjaY, int &offsetX, int &offsetY) {
     SMALL_RECT srctWindow{};
     CONSOLE_SCREEN_BUFFER_INFO info;
 
     GetConsoleScreenBufferInfo(hStdout, &info);
 
-    int top = info.srWindow.Top;
-    int right = info.srWindow.Right;
+    int gornaKrawedz = info.srWindow.Top;
+    int prawaKrawedz = info.srWindow.Right;
     COORD c;
-    c.X = right - x + offsetX;
-    c.Y = top + y -1 + offsetY;
+    c.X = prawaKrawedz - pozycjaX + offsetX;
+    std::cout << offsetX << " ";
+    if (c.X > prawaKrawedz - pozycjaX) { 
+        c.X = prawaKrawedz - pozycjaX;
+        offsetX -= 1;
+    }
+    std::cout << offsetX << " ";
+    c.Y = gornaKrawedz + pozycjaY - 1 + offsetY;
     //std::cout << c.X << " " << c.Y << std::endl;
     SetConsoleCursorPosition(hStdout, c);
 }
@@ -69,13 +75,6 @@ void rysujFigure(HANDLE hStdout, int rozmiaryFigury, char znak, int offsetX = 0,
         }
     }
 };
-void przywitanie() {
-
-}
-//funkcja pokazuj¹ca pomocne informacje dla uzytkownika
-void help() {
-
-}
 //bazowa funkcja s³u¿¹ca do stworzenia UI uzytkownika
 void menu(HANDLE whnd, HANDLE rhnd) {
     char znak = 'x';
@@ -121,10 +120,18 @@ void menu(HANDLE whnd, HANDLE rhnd) {
                             break;
                     }
                     rysujFigure(whnd, rozmiar, znak, offsetX, offsetY);
+                    std::cout << offsetX << std::endl;
 
                 }
 
             }
         }
     }
+}
+
+void changeCursorVisibility(HANDLE whnd, BOOL visibility) {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(whnd, &cursorInfo);
+    cursorInfo.bVisible = visibility;
+    SetConsoleCursorInfo(whnd, &cursorInfo);
 }

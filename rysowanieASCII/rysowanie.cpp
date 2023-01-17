@@ -5,6 +5,21 @@
 #include <Windows.h>
 #include <stdio.h>
 
+struct FIGURA{
+    int rozmiar = 3;
+    COORD translacja = { 0,0 };
+
+
+    void zmienRozmiar(int wielkoscZmiany, SHORT maksymalnaWysokosc){
+        if (wielkoscZmiany > 0 || rozmiar != 3) {
+            std::cout << rozmiar << " " << maksymalnaWysokosc;
+            rozmiar += wielkoscZmiany;
+            if (rozmiar >= maksymalnaWysokosc) {
+                rozmiar = maksymalnaWysokosc;
+            }
+        }
+    }
+};
 
 void changeCursorVisibility(HANDLE whnd, BOOL visibility) {
     CONSOLE_CURSOR_INFO cursorInfo;
@@ -21,22 +36,6 @@ void wybierzPoczatek(char &znak, int &rozmiar) {
     system("CLS");
 }
 
-bool sprawdzZmianeBufforu(SHORT prawaKrawedz, SHORT dolnaKrawedz) {
-    bool windowResized = true;
-    static SHORT oldRight = 0;
-    static SHORT oldBottom = 0;
-
-    if (!oldRight && !oldBottom) {
-        oldBottom = dolnaKrawedz;
-        oldRight = prawaKrawedz;
-    }
-    if (prawaKrawedz != oldRight || dolnaKrawedz != oldBottom) {
-        oldBottom = dolnaKrawedz;
-        oldRight = prawaKrawedz;
-        windowResized = false;
-    }
-    return windowResized;
-}
 
 void zmienPozycjeKursora(HANDLE whnd, int pozycjaX, int pozycjaY, COORD &translacja) {
     CONSOLE_SCREEN_BUFFER_INFO infoOBufferze;
@@ -48,33 +47,31 @@ void zmienPozycjeKursora(HANDLE whnd, int pozycjaX, int pozycjaY, COORD &transla
     SHORT dolnaKrawedz = infoOBufferze.srWindow.Bottom;
     SHORT lewaKrawedz = infoOBufferze.srWindow.Left;
 
-    static COORD granica = { 
+    static COORD punktOdniesienia = { 
         prawaKrawedz,
         dolnaKrawedz
     };
-    std::cout << granica.X << " " << granica.Y << " : ";
-    std::cout << sprawdzZmianeBufforu(prawaKrawedz, dolnaKrawedz);
-    if (sprawdzZmianeBufforu(prawaKrawedz, dolnaKrawedz)) {
-        granica.X = prawaKrawedz;
-        granica.Y = dolnaKrawedz;
-    }
-    std::cout << " " << granica.X << " " << granica.Y;
+    //if (sprawdzZmianeBufforu(prawaKrawedz, dolnaKrawedz)) {
+    //    granica.X = prawaKrawedz;
+    //    granica.Y = dolnaKrawedz;
+    //}
     COORD c;
-    if (translacja.X + prawaKrawedz > granica.X) {
-        translacja.X = granica.X - prawaKrawedz;
+    
+    if (translacja.X > prawaKrawedz - punktOdniesienia.X) {
+        translacja.X = prawaKrawedz - punktOdniesienia.X;
     }
-    if (abs(translacja.X) > granica.X - pozycjaX) {
-        translacja.X = -(granica.X - pozycjaX);
+    if (abs(translacja.X) > punktOdniesienia.X - pozycjaX) {
+        translacja.X = -(punktOdniesienia.X - pozycjaX);
     }
     if (translacja.Y < 0) {
         translacja.Y = 0;
     }
-    if (translacja.Y > granica.Y - pozycjaX) {
-        translacja.Y = granica.Y - pozycjaX;
+    if (translacja.Y > dolnaKrawedz - pozycjaX) {
+        translacja.Y = dolnaKrawedz - pozycjaX;
     }
     //std::cout << translacja.X << " " << translacja.Y;
 
-    c.X = granica.X - pozycjaX + translacja.X;
+    c.X = punktOdniesienia.X - pozycjaX + translacja.X;
     c.Y = gornaKrawedz + pozycjaY - 1 + translacja.Y;
     SetConsoleCursorPosition(whnd, c);
 }
@@ -123,15 +120,16 @@ void rysujFigure(HANDLE whnd, int rozmiaryFigury, char znak, COORD& tanslacja) {
 };
 //bazowa funkcja s³u¿¹ca do stworzenia UI uzytkownika
 void menu(HANDLE whnd, HANDLE rhnd) {
+    CONSOLE_SCREEN_BUFFER_INFO infoOBufferze;
+    FIGURA a;
     char znak = 'x';
-    int rozmiar = 10;
+    a.rozmiar = 10;
 
     DWORD events = 0;
     DWORD eventsread = 0;
 
-    COORD translacjaOWektor{ 0,0 };
     //wybierzPoczatek(znak, rozmiar);
-    rysujFigure(whnd,rozmiar, znak, translacjaOWektor);
+    rysujFigure(whnd,a.rozmiar, znak, a.translacja);
     while (TRUE) {
         GetNumberOfConsoleInputEvents(rhnd, &events);
         if (events != 0) {
@@ -141,30 +139,31 @@ void menu(HANDLE whnd, HANDLE rhnd) {
             for (DWORD i = 0; i < eventsread; ++i) {
                 if (eventBuffer[i].EventType == KEY_EVENT && eventBuffer[i].Event.KeyEvent.bKeyDown) {
                     system("CLS");
+                    GetConsoleScreenBufferInfo(whnd, &infoOBufferze);
                     switch (eventBuffer[i].Event.KeyEvent.wVirtualKeyCode)  {
                         case VK_OEM_PLUS:
-                            rozmiar++;
+                            a.zmienRozmiar(1, infoOBufferze.srWindow.Bottom);
                             break;
                         case VK_OEM_MINUS:
-                            if (rozmiar != 3) { rozmiar--; }
+                            a.zmienRozmiar(-1, infoOBufferze.srWindow.Bottom);
                             break;
                         case VK_UP:
-                            translacjaOWektor.Y--;
+                            a.translacja.Y--;
                             break;
                         case VK_DOWN:
-                            translacjaOWektor.Y++;
+                            a.translacja.Y++;
                             break;
                         case VK_RIGHT:
-                            translacjaOWektor.X++;
+                            a.translacja.X++;
                             break;
                         case VK_LEFT:
-                            translacjaOWektor.X--;
+                            a.translacja.X--;
                             break;
                         default:
                             std::cout << "not handled yet" << std::endl;
                             break;
                     }
-                    rysujFigure(whnd, rozmiar, znak, translacjaOWektor);
+                    rysujFigure(whnd, a.rozmiar, znak, a.translacja);
                 }
                 //if (eventBuffer[i].EventType == WINDOW_BUFFER_SIZE_EVENT) {
                 //    system("CLS");

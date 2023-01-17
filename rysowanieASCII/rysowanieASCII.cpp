@@ -8,8 +8,8 @@ Założenia projektu:
 - wybór znaku kodu ASCII; check
 − wczytanie początkowych rozmiarów figury; check
 − zmianę wielkości figury klawiszami ′+′ i ′-′; check
-− przesuwanie figury za pomocą kursorów ←, ↑, →, ↓;
-− ograniczenie przesuwania i rozmiarów figury do obszaru ekranu
+− przesuwanie figury za pomocą kursorów ←, ↑, →, ↓; check 
+− ograniczenie przesuwania i rozmiarów figury do obszaru ekranu check
 */
 
 int main()

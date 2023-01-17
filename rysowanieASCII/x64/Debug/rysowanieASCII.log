@@ -1,3 +1,3 @@
 ﻿  rysowanie.cpp
-C:\Studia\C++\repos\zaliczenie-podstaw-programowania\rysowanieASCII\rysowanie.cpp(40,9): warning C4101: 'wiersz': unreferenced local variable
+C:\Studia\C++\repos\zaliczenie-podstaw-programowania\rysowanieASCII\rysowanie.cpp(86,9): warning C4101: 'wiersz': unreferenced local variable
   rysowanieASCII.vcxproj -> C:\Studia\C++\repos\zaliczenie-podstaw-programowania\x64\Debug\rysowanieASCII.exe

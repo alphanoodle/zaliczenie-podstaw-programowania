@@ -40,6 +40,7 @@
     <ProjectGuid>{69817825-65b9-40f6-aaa7-f70853c6afa3}</ProjectGuid>
     <RootNamespace>rysowanieASCII</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>zaliczenie-podstaw-programowania</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

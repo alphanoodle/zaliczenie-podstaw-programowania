@@ -13,14 +13,16 @@ Założenia projektu:
 */
 
 int main()
-{
+{    
+
+    /*
+        Ustawiam jezyk na systemowy, aby móc w programie używać polskie znaki diakrytyczne oraz
+        wartość argumentu "seed" jako punkt startowy generatora pseudo losowych liczb calkowitych.
+        Reszta programu znajduje się w "funkcje.h" oraz "rysowanie.cpp".
+    */
     setlocale(LC_ALL, "");
-    SetConsoleTitle(L"Rysownik figur");
-    //Zaczynamy od stworzenia zmiennej pozwalającej zarządać właściwościami okna konsoli
-    //potem jako parametr będą przyjmować je wszystkie funkcje
-    HANDLE whnd = GetStdHandle(STD_OUTPUT_HANDLE);
-    HANDLE rhnd = GetStdHandle(STD_INPUT_HANDLE);
-    menu(whnd, rhnd);
+    srand(time(NULL));
+    menu();
    
 
 }
